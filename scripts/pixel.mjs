@@ -129,3 +129,34 @@ export const pc = (t, cycle) => `${Math.min(100, Math.max(0, (t / cycle) * 100))
 
 /** The raw glyph bitmaps, for the browser game. */
 export const FONT = G;
+
+/** Sans as a 28x33 pixel grid (fan art). Rows 0-15 are the head, 16-32 the body. */
+export function sansGrid() {
+  const W = 28, rows = Array.from({ length: 33 }, () => Array(W).fill('.'));
+  const fill = (r, a, b) => { for (let c = a; c <= b; c++) rows[r][c] = 'X'; };
+  const punch = (r, ...cols) => cols.forEach((c) => { if (Array.isArray(c)) for (let k = c[0]; k <= c[1]; k++) rows[r][k] = '.'; else rows[r][c] = '.'; });
+  // skull
+  fill(0, 10, 17); fill(1, 8, 19); fill(2, 7, 20); fill(3, 6, 21); fill(4, 5, 22);
+  for (let r = 5; r <= 12; r++) fill(r, 5, 22);
+  punch(5, [8, 10], [17, 19]); punch(6, [7, 11], [16, 20]); punch(7, [7, 11], [16, 20]); punch(8, [8, 10], [17, 19]);
+  punch(9, [13, 14]);
+  punch(11, [7, 20]);
+  punch(12, 8, 10, 12, 14, 16, 18);
+  fill(13, 6, 21); punch(13, [8, 19]);
+  fill(14, 7, 20); fill(15, 10, 17);
+  // hoodie
+  fill(16, 3, 24); punch(16, 4, 7, 10, 17, 20, 23);
+  fill(17, 2, 25);
+  for (let r = 18; r <= 24; r++) { fill(r, 2, 25); punch(r, [13, 14]); }
+  punch(18, 2, 25); punch(19, 2, 25);
+  punch(21, [5, 10], [17, 22]); punch(22, 5, 22);
+  fill(25, 3, 24); punch(25, [13, 14]);
+  // shorts, legs, slippers
+  fill(27, 5, 22); punch(27, [13, 14]);
+  fill(28, 5, 12); fill(28, 15, 22);
+  fill(29, 6, 11); fill(29, 16, 21); punch(29, 7, 20);
+  fill(30, 7, 8); fill(30, 19, 20);
+  fill(31, 5, 10); fill(31, 17, 22);
+  fill(32, 4, 10); fill(32, 17, 23);
+  return rows.map((r) => r.join(''));
+}

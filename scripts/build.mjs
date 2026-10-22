@@ -10,8 +10,9 @@ import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV, FONT } from './pixel.mjs';
+import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV, FONT, sansGrid } from './pixel.mjs';
 import { playPage } from './play.mjs';
+import { tokenize, pour, maskFrom } from './shape.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'assets');
@@ -67,35 +68,6 @@ function typer(id, pages, { x, y, s, lineH, cps = 26, hold = 1.4, start = 0 }) {
  * Sans, drawn as a 28x33 pixel grid (fan art, not a game sprite). Head and body are separate so the head can bob;
  * the pupils are separate so they can blink, and the left eye can light up when the battle starts.
  */
-function sansGrid() {
-  const W = 28, rows = Array.from({ length: 33 }, () => Array(W).fill('.'));
-  const fill = (r, a, b) => { for (let c = a; c <= b; c++) rows[r][c] = 'X'; };
-  const punch = (r, ...cols) => cols.forEach((c) => { if (Array.isArray(c)) for (let k = c[0]; k <= c[1]; k++) rows[r][k] = '.'; else rows[r][c] = '.'; });
-  // skull
-  fill(0, 10, 17); fill(1, 8, 19); fill(2, 7, 20); fill(3, 6, 21); fill(4, 5, 22);
-  for (let r = 5; r <= 12; r++) fill(r, 5, 22);
-  punch(5, [8, 10], [17, 19]); punch(6, [7, 11], [16, 20]); punch(7, [7, 11], [16, 20]); punch(8, [8, 10], [17, 19]);
-  punch(9, [13, 14]);
-  punch(11, [7, 20]);
-  punch(12, 8, 10, 12, 14, 16, 18);
-  fill(13, 6, 21); punch(13, [8, 19]);
-  fill(14, 7, 20); fill(15, 10, 17);
-  // hoodie
-  fill(16, 3, 24); punch(16, 4, 7, 10, 17, 20, 23);
-  fill(17, 2, 25);
-  for (let r = 18; r <= 24; r++) { fill(r, 2, 25); punch(r, [13, 14]); }
-  punch(18, 2, 25); punch(19, 2, 25);
-  punch(21, [5, 10], [17, 22]); punch(22, 5, 22);
-  fill(25, 3, 24); punch(25, [13, 14]);
-  // shorts, legs, slippers
-  fill(27, 5, 22); punch(27, [13, 14]);
-  fill(28, 5, 12); fill(28, 15, 22);
-  fill(29, 6, 11); fill(29, 16, 21); punch(29, 7, 20);
-  fill(30, 7, 8); fill(30, 19, 20);
-  fill(31, 5, 10); fill(31, 17, 22);
-  fill(32, 4, 10); fill(32, 17, 23);
-  return rows.map((r) => r.join(''));
-}
 
 function sans(x, y, s) {
   const g = sansGrid();
@@ -640,7 +612,7 @@ function track() {
   return g.map((r) => r.join('').replace(/\s+$/, '')).join('\n').replace(/\n+$/, '');
 }
 
-// ---------------------------------------------------------------------------------------------- soul (ascii art from C)
+// ---------------------------------------------------------------------------------------------- ioccc (C source shaped like Sans)
 
 /** Finds a C compiler: $CC, then gcc, clang, cc, then `zig cc`. Returns [cmd, ...prefixArgs] or null. */
 function findCC() {
@@ -655,55 +627,83 @@ function findCC() {
   return null;
 }
 
-/** Compiles and runs ascii/soul.c for 48 frames; falls back to the frames saved in the repo. */
-function soulFrames() {
-  const src = path.join(ROOT, 'ascii', 'soul.c');
-  const saved = path.join(ROOT, 'ascii', 'soul.frames.txt');
-  const cc = findCC();
-  if (cc) {
-    const exe = path.join(os.tmpdir(), `soul-${process.pid}${process.platform === 'win32' ? '.exe' : ''}`);
-    execFileSync(cc[0], [...cc.slice(1), '-O2', '-std=c99', '-o', exe, src, '-lm'], { stdio: 'inherit' });
-    const out = execFileSync(exe, ['--frames', '48'], { encoding: 'utf8', maxBuffer: 1 << 24 });
-    rmSync(exe, { force: true });
-    writeFileSync(saved, out);
-    console.log(`soul.c compiled with ${cc.join(' ')}`);
-  } else console.log('no C compiler found; using ascii/soul.frames.txt');
-  return readFileSync(saved, 'utf8').replace(/\r/g, '').split('\f\n').map((f) => f.split('\n').slice(0, 32));
+/** The head of the Sans grid with his pupils filled in: the outline the code is poured into. */
+function sansMask() {
+  const head = sansGrid().slice(0, 16).map((r) => r.slice(4, 24));
+  const r7 = head[7].split('');
+  r7[5] = 'X'; r7[14] = 'X';
+  head[7] = r7.join('');
+  return maskFrom(head, 2.6, 1.3);
 }
 
-function soul() {
-  const frames = soulFrames();
-  const W = 880, H = 440, cw = 9, lh = 12, ox = 40, oy = 40, n = frames.length, dur = 4.8;
-  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  const groups = frames.map((rows, i) => {
-    const lines = rows.map((r, j) => {
-      const a = r.search(/\S/);
-      if (a < 0) return '';
-      const t = r.trimEnd().slice(a);
-      return `<text x="${ox + a * cw}" y="${oy + (j + 1) * lh}" textLength="${t.length * cw}">${esc(t)}</text>`;
-    }).join('');
-    return `<g class="f" style="animation-delay:${(i * dur / n - dur).toFixed(3)}s">${lines}</g>`;
-  }).join('\n');
+const run = (exe, args) => execFileSync(exe, args, { encoding: 'utf8', maxBuffer: 1 << 24 }).replace(/\r/g, '');
+
+/**
+ * IOCCC-style art: pours ascii/sans.src.c into Sans's skull as ascii/sans.c, then compiles both and refuses to
+ * continue unless the shaped program prints exactly what the readable one prints.
+ */
+function iocccBuild() {
+  const dir = path.join(ROOT, 'ascii');
+  const { text: shaped, left } = pour(tokenize(readFileSync(path.join(dir, 'sans.src.c'), 'utf8')), sansMask());
+  if (left) throw new Error(`sans.c: ${left} tokens did not fit in the mask`);
+  writeFileSync(path.join(dir, 'sans.c'), `${shaped}\n`);
+  const saved = path.join(dir, 'sans.frames.txt');
+  const cc = findCC();
+  if (cc) {
+    const ext = process.platform === 'win32' ? '.exe' : '';
+    const bin = (n) => path.join(os.tmpdir(), `${n}-${process.pid}${ext}`);
+    for (const [src, out] of [['sans.src.c', bin('sans-src')], ['sans.c', bin('sans')]]) {
+      execFileSync(cc[0], [...cc.slice(1), '-O2', '-std=c99', '-w', '-o', out, path.join(dir, src)], { stdio: 'inherit' });
+    }
+    const a = run(bin('sans-src'), ['frames']), b = run(bin('sans'), ['frames']);
+    rmSync(bin('sans-src'), { force: true }); rmSync(bin('sans'), { force: true });
+    if (a !== b) throw new Error('sans.c and sans.src.c print different output');
+    writeFileSync(saved, b);
+    console.log(`sans.c compiled with ${cc.join(' ')}; output identical to sans.src.c`);
+  } else console.log('no C compiler found; using ascii/sans.frames.txt');
+  const frames = readFileSync(saved, 'utf8').split('\f\n').map((f) => f.replace(/\n$/, '').split('\n'));
+  return { shaped, frames };
+}
+
+function ioccc() {
+  const { shaped, frames } = iocccBuild();
+  const W = 880, H = 450, n = frames.length, dur = 6;
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = (rows, ox, oy, cw, lh) => rows.map((r, j) => {
+    const a = r.search(/\S/);
+    if (a < 0) return '';
+    const t = r.trimEnd().slice(a);
+    return `<text x="${(ox + a * cw).toFixed(1)}" y="${oy + (j + 1) * lh}" textLength="${(t.length * cw).toFixed(1)}">${esc(t)}</text>`;
+  }).join('');
+  // left: the source itself; right: what it prints
+  const src = shaped.split('\n');
+  const scw = 6.9, slh = 14, sox = 30, soy = 66 + (360 - src.length * slh) / 2;
+  const ocw = 6.4, olh = 10.6, oox = 440, ooy = 64;
+  const groups = frames.map((rows, i) => `<g class="f" style="animation-delay:${(i * dur / n - dur).toFixed(3)}s">${lines(rows, oox, ooy, ocw, olh)}</g>`).join('\n');
   const css = `
-    text{fill:#fff;font:13px ui-monospace,Menlo,Consolas,'Courier New',monospace;white-space:pre}
+    text{fill:#fff;font:11px ui-monospace,Menlo,Consolas,'Courier New',monospace;white-space:pre}
+    .src text{font-size:12px}
     @keyframes fr{0%{opacity:1}${(100 / n).toFixed(3)}%,100%{opacity:0}}
     .f{opacity:0;animation:fr ${dur}s steps(1,end) infinite}
     ${STILL}.f:first-of-type{opacity:1!important}}`;
-  const px = 660, note = ['A HEART, RAY', 'MARCHED IN C.', '', 'AN IMPLICIT', 'SURFACE, FOUND', 'BY BISECTION,', 'SHADED WITH A', '12 STEP RAMP.', '', '64 X 32 CELLS', `${n} FRAMES`];
   const body = `
-    ${frame(16, 12, 620, 416, 4)}
-    <g xml:space="preserve">${groups}</g>
-    ${text('SOUL.C', px, 36, 4)}
-    ${note.map((l, i) => (l ? text(l, px, 90 + i * 26, 2) : '')).join('')}`;
-  write('soul.svg', svg(W, H, 'A spinning, beating ASCII heart rendered by soul.c, a ray marcher written in C.', body, css));
+    ${text('SANS.C', 20, 14, 3)}
+    ${text('$ ./SANS', 430, 14, 3)}
+    ${frame(16, 44, 396, 396, 4)}
+    ${frame(426, 44, 438, 396, 4)}
+    <g class="src" xml:space="preserve">${lines(src, sox, soy, scw, slh)}</g>
+    <g xml:space="preserve">${groups}</g>`;
+  write('ioccc.svg', svg(W, H, 'sans.c: a C program whose source is shaped like Sans, and the Mandelbrot zoom it prints.', body, css));
 
-  // keep the source shown in the README identical to the file
   const readme = path.join(ROOT, 'README.md');
   const md = readFileSync(readme, 'utf8');
-  const RE = /(<!-- soul:start -->)[\s\S]*?(<!-- soul:end -->)/;
-  const code = readFileSync(path.join(ROOT, 'ascii', 'soul.c'), 'utf8').replace(/\r/g, '').trimEnd();
-  if (RE.test(md)) writeFileSync(readme, md.replace(RE, (_, a, b) => `${a}\n<details>\n<summary>Read soul.c</summary>\n\n\`\`\`c\n${code}\n\`\`\`\n\n</details>\n${b}`));
+  const RE = /(<!-- ioccc:start -->)[\s\S]*?(<!-- ioccc:end -->)/;
+  if (RE.test(md)) {
+    writeFileSync(readme, md.replace(RE, (_, a, b) => `${a}\n\`\`\`c\n${shaped}\n\`\`\`\n\n\`cc -O2 -o sans sans.c && ./sans\` to watch it in a terminal. It is a real program: the build compiles it next to [the readable version](ascii/sans.src.c) and checks that both print the same frames.\n${b}`));
+  } else console.warn('README has no ioccc markers');
 }
+
+
 
 // ---------------------------------------------------------------------------------------------- run
 
@@ -713,13 +713,13 @@ heading('fight', 'FIGHT', 'PROJECTS I HAVE BUILT');
 heading('act', 'ACT', 'WHAT I WORK WITH');
 heading('item', 'ITEM', 'WHERE I HAVE WORKED');
 heading('run', 'RUN', 'CLICK TO PLAY, SCROLL TO RUN');
-heading('soul', 'SOUL', 'ASCII ART, RENDERED IN C');
+heading('ioccc', 'IOCCC', 'C SOURCE SHAPED LIKE SANS');
 heading('mercy', 'MERCY', 'GET IN TOUCH');
 cards();
 tetris();
 items();
 dino();
-soul();
+ioccc();
 
 // the playable game, served by GitHub Pages
 mkdirSync(path.join(ROOT, 'play'), { recursive: true });
