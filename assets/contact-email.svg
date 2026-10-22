@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="190" viewBox="0 0 180 190" role="img" aria-label="EMAIL" shape-rendering="crispEdges">
+<title>EMAIL</title>
+<style>path,rect{fill:#fff}.k{fill:#000}
+      @keyframes bump{0%{transform:translateY(0)}4%{transform:translateY(-14px)}8%,100%{transform:translateY(0)}}
+      .blk{animation:bump 4s steps(2) infinite;animation-delay:1.20s}
+      @keyframes coin{0%{opacity:0;transform:translateY(0)}3%{opacity:1}14%{opacity:1;transform:translateY(-52px)}18%,100%{opacity:0;transform:translateY(-52px)}}
+      .coin{opacity:0;animation:coin 4s steps(5) infinite;animation-delay:1.20s}
+      @media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<rect width="180" height="190" class="k"/>
+
+      <g class="coin"><path d="M84 40h12v4h-12zM80 44h8v4h-8zM92 44h8v4h-8zM76 48h8v4h-8zM88 48h4v4h-4zM96 48h8v4h-8zM76 52h8v4h-8zM88 52h4v4h-4zM96 52h8v4h-8zM76 56h8v4h-8zM88 56h4v4h-4zM96 56h8v4h-8zM80 60h8v4h-8zM92 60h8v4h-8zM84 64h12v4h-12z"/></g>
+      <g class="blk">
+        <rect x="52" y="72" width="76" height="76"/>
+        <rect x="56" y="76" width="68" height="68" class="k"/>
+        <rect x="60" y="80" width="6" height="6"/><rect x="114" y="80" width="6" height="6"/><rect x="60" y="134" width="6" height="6"/><rect x="114" y="134" width="6" height="6"/>
+        <path d="M78 89h6v6h-6zM84 89h6v6h-6zM90 89h6v6h-6zM96 89h6v6h-6zM72 95h6v6h-6zM78 95h6v6h-6zM96 95h6v6h-6zM102 95h6v6h-6zM96 101h6v6h-6zM102 101h6v6h-6zM90 107h6v6h-6zM96 107h6v6h-6zM84 113h6v6h-6zM90 113h6v6h-6zM84 125h6v6h-6zM90 125h6v6h-6z"/>
+      </g>
+      <path d="M46.5 160h15v3h-15zM46.5 163h3v3h-3zM46.5 166h3v3h-3zM46.5 169h12v3h-12zM46.5 172h3v3h-3zM46.5 175h3v3h-3zM46.5 178h15v3h-15zM64.5 160h3v3h-3zM76.5 160h3v3h-3zM64.5 163h6v3h-6zM73.5 163h6v3h-6zM64.5 166h3v3h-3zM70.5 166h3v3h-3zM76.5 166h3v3h-3zM64.5 169h3v3h-3zM70.5 169h3v3h-3zM76.5 169h3v3h-3zM64.5 172h3v3h-3zM76.5 172h3v3h-3zM64.5 175h3v3h-3zM76.5 175h3v3h-3zM64.5 178h3v3h-3zM76.5 178h3v3h-3zM85.5 160h9v3h-9zM82.5 163h3v3h-3zM94.5 163h3v3h-3zM82.5 166h3v3h-3zM94.5 166h3v3h-3zM82.5 169h15v3h-15zM82.5 172h3v3h-3zM94.5 172h3v3h-3zM82.5 175h3v3h-3zM94.5 175h3v3h-3zM82.5 178h3v3h-3zM94.5 178h3v3h-3zM103.5 160h9v3h-9zM106.5 163h3v3h-3zM106.5 166h3v3h-3zM106.5 169h3v3h-3zM106.5 172h3v3h-3zM106.5 175h3v3h-3zM103.5 178h9v3h-9zM118.5 160h3v3h-3zM118.5 163h3v3h-3zM118.5 166h3v3h-3zM118.5 169h3v3h-3zM118.5 172h3v3h-3zM118.5 175h3v3h-3zM118.5 178h15v3h-15z"/>
+</svg>

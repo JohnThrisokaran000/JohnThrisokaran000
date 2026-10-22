@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="64" viewBox="0 0 880 64" role="img" aria-label="Also Building">
-  <title>Also Building</title>
-  <defs><linearGradient id="u" x1="0" x2="1"><stop offset="0" stop-color="#007ea0"/><stop offset="1" stop-color="#007ea0" stop-opacity="0"/></linearGradient></defs>
-  <text x="440" y="34" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="700" fill="#08161b">Also Building</text>
-  <rect x="390" y="50" width="100" height="3" fill="url(#u)"/>
-</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="72" viewBox="0 0 220 72" role="img" aria-label="ITEM: Experience" shape-rendering="crispEdges">
+<title>ITEM: Experience</title>
+<style>path,rect{fill:#fff}.k{fill:#000}
+      @keyframes sel{0%,50.000%{opacity:0}50.017%,75.000%{opacity:1}75.017%,100%{opacity:0}}
+      .sel{opacity:0;animation:sel 6s linear infinite}
+      @media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<rect width="220" height="72" class="k"/>
+
+      <path d="M0 0h220v72h-220z M4 4v64h212v-64z" fill-rule="evenodd"/>
+      <path d="M30 20h16v4h-16zM26 24h4v4h-4zM46 24h4v4h-4zM22 28h32v4h-32zM22 32h4v4h-4zM50 32h4v4h-4zM22 36h4v4h-4zM34 36h8v4h-8zM50 36h4v4h-4zM22 40h4v4h-4zM50 40h4v4h-4zM22 44h4v4h-4zM50 44h4v4h-4zM22 48h32v4h-32z"/>
+      <path d="M89 22h12v4h-12zM93 26h4v4h-4zM93 30h4v4h-4zM93 34h4v4h-4zM93 38h4v4h-4zM93 42h4v4h-4zM89 46h12v4h-12zM109 22h20v4h-20zM117 26h4v4h-4zM117 30h4v4h-4zM117 34h4v4h-4zM117 38h4v4h-4zM117 42h4v4h-4zM117 46h4v4h-4zM133 22h20v4h-20zM133 26h4v4h-4zM133 30h4v4h-4zM133 34h16v4h-16zM133 38h4v4h-4zM133 42h4v4h-4zM133 46h20v4h-20zM157 22h4v4h-4zM173 22h4v4h-4zM157 26h8v4h-8zM169 26h8v4h-8zM157 30h4v4h-4zM165 30h4v4h-4zM173 30h4v4h-4zM157 34h4v4h-4zM165 34h4v4h-4zM173 34h4v4h-4zM157 38h4v4h-4zM173 38h4v4h-4zM157 42h4v4h-4zM173 42h4v4h-4zM157 46h4v4h-4zM173 46h4v4h-4z"/>
+      <g class="sel">
+        <rect x="4" y="4" width="212" height="64"/>
+        <rect x="18" y="16" width="44" height="40"/>
+        <path d="M26 22h8v4h-8zM46 22h8v4h-8zM22 26h16v4h-16zM42 26h16v4h-16zM22 30h36v4h-36zM22 34h36v4h-36zM26 38h28v4h-28zM30 42h20v4h-20zM34 46h12v4h-12zM38 50h4v4h-4z" class="k"/>
+        <path d="M89 22h12v4h-12zM93 26h4v4h-4zM93 30h4v4h-4zM93 34h4v4h-4zM93 38h4v4h-4zM93 42h4v4h-4zM89 46h12v4h-12zM109 22h20v4h-20zM117 26h4v4h-4zM117 30h4v4h-4zM117 34h4v4h-4zM117 38h4v4h-4zM117 42h4v4h-4zM117 46h4v4h-4zM133 22h20v4h-20zM133 26h4v4h-4zM133 30h4v4h-4zM133 34h16v4h-16zM133 38h4v4h-4zM133 42h4v4h-4zM133 46h20v4h-20zM157 22h4v4h-4zM173 22h4v4h-4zM157 26h8v4h-8zM169 26h8v4h-8zM157 30h4v4h-4zM165 30h4v4h-4zM173 30h4v4h-4zM157 34h4v4h-4zM165 34h4v4h-4zM173 34h4v4h-4zM157 38h4v4h-4zM173 38h4v4h-4zM157 42h4v4h-4zM173 42h4v4h-4zM157 46h4v4h-4zM173 46h4v4h-4z" class="k"/>
+      </g>
+</svg>
