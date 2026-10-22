@@ -9,6 +9,7 @@ export function playPage({ font, dino, legsA, legsB, cactus, cloud, heart, profi
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dino Run</title>
+<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' shape-rendering='crispEdges'><rect width='9' height='8'/><path fill='%23fff' d='${heart.map((row, r) => [...row].map((ch, c) => (ch === 'X' ? `M${c} ${r}h1v1h-1z` : '')).join('')).join('')}'/></svg>`).replace(/%2523/g, '%23')}">
 <meta name="description" content="A black and white dino runner on John Thrisokaran's GitHub profile.">
 <style>
   :root { color-scheme: dark; }
