@@ -5,7 +5,9 @@
 // All animation is CSS inside the SVGs, so it runs on GitHub (no JavaScript). Each file also honours
 // prefers-reduced-motion and then shows a still, fully readable frame.
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV } from './pixel.mjs';
@@ -392,7 +394,7 @@ const SKILLS = [
   ['BACKEND', 'NODE  FASTAPI  FLASK  DJANGO  SPRING'],
   ['DATA', 'POSTGRES  MONGODB  REDIS  SQLITE'],
   ['MOBILE', 'FLUTTER  KOTLIN  FIREBASE'],
-  ['SYSTEMS', 'RUST  ZIG  C++  CUDA'],
+  ['SYSTEMS', 'C  C++  RUST  ZIG  CUDA'],
   ['TOOLS', 'GIT  DOCKER  AWS  FFMPEG'],
 ];
 
@@ -587,6 +589,71 @@ function dino() {
   write('dino.svg', svg(W, H, 'A pixel dinosaur running and jumping over cacti, with a ticking score.', body, css));
 }
 
+// ---------------------------------------------------------------------------------------------- soul (ascii art from C)
+
+/** Finds a C compiler: $CC, then gcc, clang, cc, then `zig cc`. Returns [cmd, ...prefixArgs] or null. */
+function findCC() {
+  const tries = [];
+  if (process.env.CC) tries.push(process.env.CC.split(' '));
+  tries.push(['gcc'], ['clang'], ['cc'], ['zig', 'cc']);
+  const zigHome = path.join(os.homedir(), 'tools', 'zig');
+  if (existsSync(zigHome)) for (const d of readdirSync(zigHome)) tries.push([path.join(zigHome, d, 'zig.exe'), 'cc'], [path.join(zigHome, d, 'zig'), 'cc']);
+  for (const t of tries) {
+    try { execFileSync(t[0], [...t.slice(1), '--version'], { stdio: 'ignore' }); return t; } catch { /* try next */ }
+  }
+  return null;
+}
+
+/** Compiles and runs ascii/soul.c for 48 frames; falls back to the frames saved in the repo. */
+function soulFrames() {
+  const src = path.join(ROOT, 'ascii', 'soul.c');
+  const saved = path.join(ROOT, 'ascii', 'soul.frames.txt');
+  const cc = findCC();
+  if (cc) {
+    const exe = path.join(os.tmpdir(), `soul-${process.pid}${process.platform === 'win32' ? '.exe' : ''}`);
+    execFileSync(cc[0], [...cc.slice(1), '-O2', '-std=c99', '-o', exe, src, '-lm'], { stdio: 'inherit' });
+    const out = execFileSync(exe, ['--frames', '48'], { encoding: 'utf8', maxBuffer: 1 << 24 });
+    rmSync(exe, { force: true });
+    writeFileSync(saved, out);
+    console.log(`soul.c compiled with ${cc.join(' ')}`);
+  } else console.log('no C compiler found; using ascii/soul.frames.txt');
+  return readFileSync(saved, 'utf8').replace(/\r/g, '').split('\f\n').map((f) => f.split('\n').slice(0, 32));
+}
+
+function soul() {
+  const frames = soulFrames();
+  const W = 880, H = 440, cw = 9, lh = 12, ox = 40, oy = 40, n = frames.length, dur = 4.8;
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const groups = frames.map((rows, i) => {
+    const lines = rows.map((r, j) => {
+      const a = r.search(/\S/);
+      if (a < 0) return '';
+      const t = r.trimEnd().slice(a);
+      return `<text x="${ox + a * cw}" y="${oy + (j + 1) * lh}" textLength="${t.length * cw}">${esc(t)}</text>`;
+    }).join('');
+    return `<g class="f" style="animation-delay:${(i * dur / n - dur).toFixed(3)}s">${lines}</g>`;
+  }).join('\n');
+  const css = `
+    text{fill:#fff;font:13px ui-monospace,Menlo,Consolas,'Courier New',monospace;white-space:pre}
+    @keyframes fr{0%{opacity:1}${(100 / n).toFixed(3)}%,100%{opacity:0}}
+    .f{opacity:0;animation:fr ${dur}s steps(1,end) infinite}
+    ${STILL}.f:first-of-type{opacity:1!important}}`;
+  const px = 660, note = ['A HEART, RAY', 'MARCHED IN C.', '', 'AN IMPLICIT', 'SURFACE, FOUND', 'BY BISECTION,', 'SHADED WITH A', '12 STEP RAMP.', '', '64 X 32 CELLS', `${n} FRAMES`];
+  const body = `
+    ${frame(16, 12, 620, 416, 4)}
+    <g xml:space="preserve">${groups}</g>
+    ${text('SOUL.C', px, 36, 4)}
+    ${note.map((l, i) => (l ? text(l, px, 90 + i * 26, 2) : '')).join('')}`;
+  write('soul.svg', svg(W, H, 'A spinning, beating ASCII heart rendered by soul.c, a ray marcher written in C.', body, css));
+
+  // keep the source shown in the README identical to the file
+  const readme = path.join(ROOT, 'README.md');
+  const md = readFileSync(readme, 'utf8');
+  const RE = /(<!-- soul:start -->)[\s\S]*?(<!-- soul:end -->)/;
+  const code = readFileSync(path.join(ROOT, 'ascii', 'soul.c'), 'utf8').replace(/\r/g, '').trimEnd();
+  if (RE.test(md)) writeFileSync(readme, md.replace(RE, (_, a, b) => `${a}\n<details>\n<summary>Read soul.c</summary>\n\n\`\`\`c\n${code}\n\`\`\`\n\n</details>\n${b}`));
+}
+
 // ---------------------------------------------------------------------------------------------- run
 
 hero();
@@ -595,11 +662,13 @@ heading('fight', 'FIGHT', 'PROJECTS I HAVE BUILT');
 heading('act', 'ACT', 'WHAT I WORK WITH');
 heading('item', 'ITEM', 'WHERE I HAVE WORKED');
 heading('run', 'RUN', 'STILL BUILDING OFFLINE');
+heading('soul', 'SOUL', 'ASCII ART, RENDERED IN C');
 heading('mercy', 'MERCY', 'GET IN TOUCH');
 cards();
 tetris();
 items();
 dino();
+soul();
 blocks();
 save();
 console.log('built', OUT);
