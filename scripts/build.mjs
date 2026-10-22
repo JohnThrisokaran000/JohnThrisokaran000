@@ -5,10 +5,10 @@
 // All animation is CSS inside the SVGs, so it runs on GitHub (no JavaScript). Each file also honours
 // prefers-reduced-motion and then shows a still, fully readable frame.
 
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { text, textW, textPath, sprite, svg, frame, pc, SPRITES, ADV } from './pixel.mjs';
+import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV } from './pixel.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'assets');
@@ -58,13 +58,63 @@ function typer(id, pages, { x, y, s, lineH, cps = 26, hold = 1.4, start = 0 }) {
   };
 }
 
+// ---------------------------------------------------------------------------------------------- sans
+
+/**
+ * Sans, drawn as a 28x33 pixel grid (fan art, not a game sprite). Head and body are separate so the head can bob;
+ * the pupils are separate so they can blink, and the left eye can light up when the battle starts.
+ */
+function sansGrid() {
+  const W = 28, rows = Array.from({ length: 33 }, () => Array(W).fill('.'));
+  const fill = (r, a, b) => { for (let c = a; c <= b; c++) rows[r][c] = 'X'; };
+  const punch = (r, ...cols) => cols.forEach((c) => { if (Array.isArray(c)) for (let k = c[0]; k <= c[1]; k++) rows[r][k] = '.'; else rows[r][c] = '.'; });
+  // skull
+  fill(0, 10, 17); fill(1, 8, 19); fill(2, 7, 20); fill(3, 6, 21); fill(4, 5, 22);
+  for (let r = 5; r <= 12; r++) fill(r, 5, 22);
+  punch(5, [8, 10], [17, 19]); punch(6, [7, 11], [16, 20]); punch(7, [7, 11], [16, 20]); punch(8, [8, 10], [17, 19]);
+  punch(9, [13, 14]);
+  punch(11, [7, 20]);
+  punch(12, 8, 10, 12, 14, 16, 18);
+  fill(13, 6, 21); punch(13, [8, 19]);
+  fill(14, 7, 20); fill(15, 10, 17);
+  // hoodie
+  fill(16, 3, 24); punch(16, 4, 7, 10, 17, 20, 23);
+  fill(17, 2, 25);
+  for (let r = 18; r <= 24; r++) { fill(r, 2, 25); punch(r, [13, 14]); }
+  punch(18, 2, 25); punch(19, 2, 25);
+  punch(21, [5, 10], [17, 22]); punch(22, 5, 22);
+  fill(25, 3, 24); punch(25, [13, 14]);
+  // shorts, legs, slippers
+  fill(27, 5, 22); punch(27, [13, 14]);
+  fill(28, 5, 12); fill(28, 15, 22);
+  fill(29, 6, 11); fill(29, 16, 21); punch(29, 7, 20);
+  fill(30, 7, 8); fill(30, 19, 20);
+  fill(31, 5, 10); fill(31, 17, 22);
+  fill(32, 4, 10); fill(32, 17, 23);
+  return rows.map((r) => r.join(''));
+}
+
+function sans(x, y, s) {
+  const g = sansGrid();
+  const head = g.slice(0, 16), body = g.slice(16);
+  return `
+    <g class="sans">
+      <g class="sbody">${`<path d="${bitmapPath(body, x, y + 16 * s, s)}"/>`}</g>
+      <g class="shead">
+        <path d="${bitmapPath(head, x, y, s)}"/>
+        <g class="pupils"><rect x="${x + 9 * s}" y="${y + 7 * s}" width="${s}" height="${s}"/><rect class="pr" x="${x + 18 * s}" y="${y + 7 * s}" width="${s}" height="${s}"/></g>
+        <g class="glow"><rect x="${x + 17 * s}" y="${y + 6 * s}" width="${3 * s}" height="${3 * s}"/><rect class="flick" x="${x + 16 * s}" y="${y + 5 * s}" width="${5 * s}" height="${5 * s}" opacity=".45"/></g>
+      </g>
+    </g>`;
+}
+
 // ---------------------------------------------------------------------------------------------- hero
 
 function hero() {
-  const W = 960, H = 410;
+  const W = 960, H = 440;
   const name = 'JOHN THRISOKARAN';
-  const nameS = 6, nameW = textW(name, nameS);
-  const box = { x: 40, y: 150, w: 880, h: 190, t: 6 };
+  const nameS = 6;
+  const box = { x: 40, y: 176, w: 880, h: 190, t: 6 };
   const dialogue = typer('d', [
     ['* JOHN THRISOKARAN BLOCKS THE WAY!'],
     ['* BUILDS WEB APPS, MOBILE APPS,', '  AND THE TOOLS UNDERNEATH THEM.'],
@@ -105,6 +155,17 @@ function hero() {
     @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
     @keyframes name{0%{opacity:0;transform:translateY(-6px)}100%{opacity:1;transform:none}}
     .nm{animation:name .6s steps(4) both}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+    .shead{animation:bob 1.4s steps(2) infinite}
+    @keyframes shrug{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+    .sbody{animation:shrug 1.4s steps(2) infinite}
+    @keyframes wink{0%,92%{opacity:1}93%,97%{opacity:0}98%,100%{opacity:1}}
+    .pr{animation:wink 3.7s steps(1) infinite}
+    @keyframes eyes{0%,${pc(dialogue.end, cycle)}{opacity:1}${pc(dialogue.end + 0.001, cycle)},${pc(cycle - 0.05, cycle)}{opacity:0}100%{opacity:1}}
+    .pupils{animation:eyes ${cycle}s linear infinite}
+    .glow{opacity:0;animation:bt ${cycle}s linear infinite}
+    @keyframes flick{0%,100%{opacity:.45}50%{opacity:0}}
+    .flick{animation:flick .25s steps(1) infinite}
   `;
 
   // stats row under the box
@@ -121,8 +182,9 @@ function hero() {
   const tag = 'FULL STACK DEVELOPER  /  MUMBAI';
   const body = `
     <defs>${d.defs}<clipPath id="arena"><rect x="${inX0}" y="${box.y + box.t}" width="${inX1 - inX0}" height="${box.h - 2 * box.t}"/></clipPath></defs>
-    <g class="nm">${text(name, (W - nameW) / 2, 36, nameS)}</g>
-    ${text(tag, (W - textW(tag, 2)) / 2, 100, 2)}
+    ${sans(box.x, 4, 5)}
+    <g class="nm">${text(name, 214, 50, nameS)}</g>
+    ${text(tag, 216, 114, 2)}
     ${frame(box.x, box.y, box.w, box.h, box.t)}
     ${d.body}
     <g class="battle" clip-path="url(#arena)">
@@ -451,48 +513,78 @@ function save() {
   write('save.svg', svg(W, H, 'The sheer amount of code here fills you with determination. File saved.', body, css));
 }
 
-// ---------------------------------------------------------------------------------------------- scrolling world map (README text)
+// ---------------------------------------------------------------------------------------------- dino runner
 
-/** A side-scrolling level drawn in plain text. GitHub puts wide code blocks in a horizontal scroller. */
-function worldMap() {
-  const stops = [
-    { at: 8, label: 'START' },
-    { at: 40, label: 'CIPHERVAULT' },
-    { at: 80, label: 'VOLUNTEER CHECK-IN' },
-    { at: 128, label: 'SENTINEL' },
-    { at: 168, label: 'PATCHWORK' },
-    { at: 206, label: 'HK' },
-    { at: 240, label: 'PPTX-TO-VIDEO' },
-  ];
-  const width = 300, height = 13;
-  const g = Array.from({ length: height }, () => Array(width).fill(' '));
-  const put = (x, y, s) => [...s].forEach((ch, i) => { if (x + i < width && y >= 0 && y < height) g[y][x + i] = ch; });
-  // ground with gaps
-  for (let x = 0; x < width; x++) { put(x, 11, '#'); put(x, 12, '#'); }
-  for (const gap of [60, 61, 62, 150, 151, 152]) { put(gap, 11, ' '); put(gap, 12, ' '); }
-  // clouds and blocks
-  for (const [x, y] of [[20, 1], [70, 2], [115, 1], [185, 2], [260, 1]]) { put(x, y, ' .--. '); put(x, y + 1, '(____)'); }
-  for (const x of [30, 34, 96, 100, 104, 176, 222]) put(x, 6, '[?]');
-  for (const x of [50, 54, 58]) put(x, 8, '[=]');
-  // pipes at each stop, sign on top
-  stops.slice(1).forEach(({ at, label }) => {
-    const sign = `[ ${label} ]`;
-    put(at - Math.floor(sign.length / 2) + 2, 5, sign);
-    put(at, 7, '+----+');
-    for (let y = 8; y < 11; y++) put(at, y, '|    |');
-  });
-  // hero and flag
-  put(6, 9, ' o ');
-  put(6, 10, '/|\\');
-  put(stops[0].at - 4, 4, 'JOHN, LV 6');
-  const fx = 280;
-  put(fx, 2, '|>');
-  for (let y = 3; y < 11; y++) put(fx, y, '|');
-  put(fx - 6, 1, 'SHIPPED');
-  put(fx + 4, 8, ' _|_|_ ');
-  put(fx + 4, 9, '|  _  |');
-  put(fx + 4, 10, '| | | |');
-  return g.map((r) => r.join('').replace(/\s+$/, '')).join('\n');
+const DINO = [
+  '..........XXXXXXXX',
+  '.........XX.XXXXXX',
+  '.........XXXXXXXXX',
+  '.........XXXXXXXXX',
+  '.........XXXXX....',
+  '.........XXXXXXXX.',
+  'X.......XXXXX.....',
+  'X......XXXXXX.....',
+  'XX....XXXXXXXXX...',
+  'XXX..XXXXXXX.X....',
+  'XXXXXXXXXXXX......',
+  'XXXXXXXXXXXX......',
+  '.XXXXXXXXXX.......',
+  '..XXXXXXXXX.......',
+  '...XXXXXXX........',
+];
+const LEGS_A = ['....XXX.XX........', '....XX...X........', '....X....X........', '....XX...XX.......'];
+const LEGS_B = ['....XX.XXX........', '....XX...XX.......', '....XX............', '..........XX......'];
+const CACTUS = ['....XX....', '....XX..X.', 'X...XX..X.', 'X...XX..X.', 'X...XXXXX.', 'X...XX....', 'XXXXXX....', '....XX....', '....XX....', '....XX....'];
+const CLOUD = ['....XXXX....', '..XX....XX..', '.X........XXX', 'X............X', 'XXXXXXXXXXXXXX'];
+SPRITES._cloud = CLOUD;
+
+function dino() {
+  const W = 880, H = 230, s = 4, ground = 186;
+  const dx = 70, dh = (DINO.length + 4) * s, dy = ground - dh;
+  const T = 2.4, x0 = W, dist = W + 60;
+  const pass = (x0 + 20 - (dx + 36)) / dist;
+  const kf = [];
+  for (const c of [pass, (pass + 0.5) % 1]) kf.push([c - 0.1, 0], [c, -84], [c + 0.1, 0]);
+  const jumpKf = [[0, 0], ...kf, [1, 0]].sort((a, b) => a[0] - b[0]).map(([o, v]) => `${(o * 100).toFixed(2)}%{transform:translateY(${v}px)}`).join('');
+  const speed = dist / T, tile = 220;
+  let pebbles = '';
+  for (let k = 0; k < 6; k++) {
+    for (const [px, py, pw] of [[12, 8, 8], [60, 14, 4], [104, 6, 12], [150, 12, 4], [190, 8, 6]]) pebbles += `<rect x="${k * tile + px}" y="${ground + py}" width="${pw}" height="2"/>`;
+  }
+  // score: an odometer, each digit a strip of 0-9 clipped to one cell
+  const ds = 3, cellH = 8 * ds, sx = W - 6 * ADV * ds - 20, sy = 20;
+  const strip = (i, period) => {
+    const col = Array.from({ length: 11 }, (_, n) => text(String(n % 10), sx + i * ADV * ds, sy + n * cellH, ds)).join('');
+    return period ? `<g class="odo" style="animation-duration:${period}s">${col}</g>` : text('0', sx + i * ADV * ds, sy, ds);
+  };
+  const css = `
+    @keyframes cact{from{transform:translateX(0)}to{transform:translateX(${-dist}px)}}
+    .cact{animation:cact ${T}s linear infinite}
+    @keyframes jump{${jumpKf}}
+    .dino{animation:jump ${T}s cubic-bezier(.3,0,.7,1) infinite}
+    @keyframes la{0%,49%{opacity:1}50%,100%{opacity:0}}@keyframes lb{0%,49%{opacity:0}50%,100%{opacity:1}}
+    .la{animation:la .24s steps(1) infinite}.lb{opacity:0;animation:lb .24s steps(1) infinite}
+    @keyframes grd{to{transform:translateX(${-tile}px)}}
+    .grd{animation:grd ${(tile / speed).toFixed(3)}s linear infinite}
+    @keyframes cloud{from{transform:translateX(0)}to{transform:translateX(${-(W + 80)}px)}}
+    .cloud{animation:cloud 14s linear infinite}
+    @keyframes odo{to{transform:translateY(${-10 * cellH}px)}}
+    .odo{animation-name:odo;animation-timing-function:steps(10);animation-iteration-count:infinite}
+    ${STILL}.lb{opacity:0!important}}`;
+  const body = `
+    <defs><clipPath id="score"><rect x="${sx}" y="${sy}" width="${5 * ADV * ds}" height="${7 * ds}"/></clipPath></defs>
+    ${text('HI 00820', sx - 9 * ADV * ds, sy, ds)}
+    <g clip-path="url(#score)">${strip(0)}${strip(1)}${strip(2, 100)}${strip(3, 10)}${strip(4, 1)}</g>
+    <g class="cloud">${sprite("_cloud", W, 66, 4)}</g><g class="cloud" style="animation-delay:-7s">${sprite("_cloud", W, 104, 3)}</g>
+    <rect x="0" y="${ground}" width="${W}" height="2"/>
+    <g class="grd">${pebbles}</g>
+    ${[0, 1].map((k) => `<g class="cact" style="animation-delay:${(-k * T / 2).toFixed(2)}s"><path d="${bitmapPath(CACTUS, x0, ground - CACTUS.length * s, s)}"/></g>`).join('')}
+    <g class="dino">
+      <path d="${bitmapPath(DINO, dx, dy, s)}"/>
+      <path class="la" d="${bitmapPath(LEGS_A, dx, dy + DINO.length * s, s)}"/>
+      <path class="lb" d="${bitmapPath(LEGS_B, dx, dy + DINO.length * s, s)}"/>
+    </g>`;
+  write('dino.svg', svg(W, H, 'A pixel dinosaur running and jumping over cacti, with a ticking score.', body, css));
 }
 
 // ---------------------------------------------------------------------------------------------- run
@@ -502,19 +594,12 @@ buttons();
 heading('fight', 'FIGHT', 'PROJECTS I HAVE BUILT');
 heading('act', 'ACT', 'WHAT I WORK WITH');
 heading('item', 'ITEM', 'WHERE I HAVE WORKED');
-heading('map', 'MAP', 'SCROLL SIDEWAYS');
+heading('run', 'RUN', 'STILL BUILDING OFFLINE');
 heading('mercy', 'MERCY', 'GET IN TOUCH');
 cards();
 tetris();
 items();
+dino();
 blocks();
 save();
-
-// the README keeps the map between markers, so the text stays in sync with the generator
-const readme = path.join(ROOT, 'README.md');
-const md = readFileSync(readme, 'utf8');
-const MAP_RE = /(<!-- map:start -->\r?\n```text\r?\n)[\s\S]*?(```\r?\n<!-- map:end -->)/;
-if (MAP_RE.test(md)) writeFileSync(readme, md.replace(MAP_RE, (_, a, b) => `${a}${worldMap()}\n${b}`));
-else console.warn('README has no map markers; map not written');
 console.log('built', OUT);
-void ADV; void SPRITES;
