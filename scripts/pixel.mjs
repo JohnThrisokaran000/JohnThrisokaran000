@@ -126,3 +126,6 @@ export const frame = (x, y, w, h, t) => `<path d="M${x} ${y}h${w}v${h}h${-w}z M$
 
 /** Percent of a cycle, for keyframes. */
 export const pc = (t, cycle) => `${Math.min(100, Math.max(0, (t / cycle) * 100)).toFixed(3)}%`;
+
+/** The raw glyph bitmaps, for the browser game. */
+export const FONT = G;

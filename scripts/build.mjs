@@ -10,7 +10,8 @@ import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV } from './pixel.mjs';
+import { text, textW, sprite, svg, frame, pc, bitmapPath, SPRITES, ADV, FONT } from './pixel.mjs';
+import { playPage } from './play.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'assets');
@@ -572,9 +573,12 @@ function dino() {
     .cloud{animation:cloud 14s linear infinite}
     @keyframes odo{to{transform:translateY(${-10 * cellH}px)}}
     .odo{animation-name:odo;animation-timing-function:steps(10);animation-iteration-count:infinite}
+    @keyframes cta{0%,59%{opacity:1}60%,100%{opacity:0}}
+    .cta{animation:cta 1.2s steps(1) infinite}
     ${STILL}.lb{opacity:0!important}}`;
   const body = `
     <defs><clipPath id="score"><rect x="${sx}" y="${sy}" width="${5 * ADV * ds}" height="${7 * ds}"/></clipPath></defs>
+    <g class="cta">${text('> CLICK TO PLAY', 20, sy, ds)}</g>
     ${text('HI 00820', sx - 9 * ADV * ds, sy, ds)}
     <g clip-path="url(#score)">${strip(0)}${strip(1)}${strip(2, 100)}${strip(3, 10)}${strip(4, 1)}</g>
     <g class="cloud">${sprite("_cloud", W, 66, 4)}</g><g class="cloud" style="animation-delay:-7s">${sprite("_cloud", W, 104, 3)}</g>
@@ -587,6 +591,53 @@ function dino() {
       <path class="lb" d="${bitmapPath(LEGS_B, dx, dy + DINO.length * s, s)}"/>
     </g>`;
   write('dino.svg', svg(W, H, 'A pixel dinosaur running and jumping over cacti, with a ticking score.', body, css));
+}
+
+// ---------------------------------------------------------------------------------------------- scrolling track (README text)
+
+/** A dino run drawn in plain ASCII. GitHub puts wide code blocks in a horizontal scroller, so scrolling is running. */
+function track() {
+  const width = 340, height = 14, ground = 11;
+  const g = Array.from({ length: height }, () => Array(width).fill(' '));
+  const put = (x, y, s) => [...s].forEach((ch, i) => { if (x + i >= 0 && x + i < width && y >= 0 && y < height) g[y][x + i] = ch; });
+  const art = (x, yTop, lines) => lines.forEach((l, i) => put(x, yTop + i, l));
+
+  const DINO_ART = [
+    '          .-----.',
+    '          | o   |',
+    '          |  .--\'',
+    ' \\        |  |--.',
+    '  \\.------\'  |',
+    '   \\_       _/',
+    '     |_|  |_|',
+  ];
+  const CACTUS_ART = ['   _', ' _| | _', '| | || |', '|_  ,_/', '  | |', '  | |'];
+  const BIRD_ART = [' __', '<__\\___', '    \\/'];
+  const CLOUD_ART = ['  .--.', '.(    ).', '(_______)'];
+
+  for (let x = 0; x < width; x++) put(x, ground, '_');
+  for (let x = 0; x < width; x += 7) put(x + ((x * 7) % 5), ground + 1, (x / 7) % 3 === 0 ? '.' : (x / 7) % 3 === 1 ? '-' : ',');
+  for (const [x, y] of [[30, 0], [96, 1], [150, 0], [212, 1], [290, 0]]) art(x, y, CLOUD_ART);
+
+  art(2, ground - DINO_ART.length, DINO_ART);
+  put(2, 1, 'HI 00820  00000');
+  put(24, 6, 'SCROLL  >>>');
+
+  const stops = [
+    [52, 'CIPHERVAULT'], [96, 'VOLUNTEER CHECK-IN'], [146, 'SENTINEL'],
+    [196, 'PATCHWORK'], [244, 'HK'], [290, 'PPTX-TO-VIDEO'],
+  ];
+  for (const [x, label] of stops) {
+    art(x, ground - CACTUS_ART.length, CACTUS_ART);
+    const sign = `[ ${label} ]`;
+    put(x + 4 - Math.floor(sign.length / 2), ground - CACTUS_ART.length - 2, sign);
+  }
+  for (const [x, y] of [[74, 3], [170, 2], [268, 3]]) art(x, y, BIRD_ART);
+
+  const end = width - 18;
+  art(end, 2, ['GAME OVER?', '', ' NO. SHIPPED.']);
+  art(end + 3, 7, ['  *', ' *** ', '*****', ' | |']);
+  return g.map((r) => r.join('').replace(/\s+$/, '')).join('\n').replace(/\n+$/, '');
 }
 
 // ---------------------------------------------------------------------------------------------- soul (ascii art from C)
@@ -661,7 +712,7 @@ buttons();
 heading('fight', 'FIGHT', 'PROJECTS I HAVE BUILT');
 heading('act', 'ACT', 'WHAT I WORK WITH');
 heading('item', 'ITEM', 'WHERE I HAVE WORKED');
-heading('run', 'RUN', 'STILL BUILDING OFFLINE');
+heading('run', 'RUN', 'CLICK TO PLAY, SCROLL TO RUN');
 heading('soul', 'SOUL', 'ASCII ART, RENDERED IN C');
 heading('mercy', 'MERCY', 'GET IN TOUCH');
 cards();
@@ -669,6 +720,23 @@ tetris();
 items();
 dino();
 soul();
+
+// the playable game, served by GitHub Pages
+mkdirSync(path.join(ROOT, 'play'), { recursive: true });
+writeFileSync(path.join(ROOT, 'play', 'index.html'), playPage({
+  font: FONT, dino: DINO, legsA: LEGS_A, legsB: LEGS_B, cactus: CACTUS, cloud: CLOUD, heart: SPRITES.heart,
+  profileUrl: 'https://github.com/JohnThrisokaran000',
+}));
+writeFileSync(path.join(ROOT, '.nojekyll'), '');
+
+// the side-scrolling track lives in the README between markers
+{
+  const readme = path.join(ROOT, 'README.md');
+  const md = readFileSync(readme, 'utf8');
+  const RE = /(<!-- track:start -->)[\s\S]*?(<!-- track:end -->)/;
+  if (RE.test(md)) writeFileSync(readme, md.replace(RE, (_, a, b) => `${a}\n\`\`\`text\n${track()}\n\`\`\`\n${b}`));
+  else console.warn('README has no track markers');
+}
 blocks();
 save();
 console.log('built', OUT);

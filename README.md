@@ -44,9 +44,30 @@ Select a project to open its repository.
 
 <br>
 
-<img src="assets/h-run.svg" width="100%" alt="RUN: still building offline">
+<a name="run"></a>
+<img src="assets/h-run.svg" width="100%" alt="RUN: click to play, scroll to run">
 
-<p align="center"><img src="assets/dino.svg" width="100%" alt="A pixel dinosaur running and jumping over cacti, with a ticking score."></p>
+<p align="center"><a href="https://johnthrisokaran000.github.io/JohnThrisokaran000/play/"><img src="assets/dino.svg" width="100%" alt="Dino runner. Click to play it in your browser."></a></p>
+
+<p align="center"><a href="https://johnthrisokaran000.github.io/JohnThrisokaran000/play/"><b>PLAY IT</b></a>: space, up arrow, click or tap to jump. Or scroll the track below.</p>
+
+<!-- track:start -->
+```text
+                                .--.                                                                                                                    .--.                                                                                                                                        .--.
+  HI 00820  00000             .(    ).                                                            .--.                                                .(    ).                                                        .--.                                                                        .(    ).
+                              (_______)                                                         .(    ).                                              (_______)            __                                       .(    ).                                                                      (_______)                       GAME OVER?
+                                                 [ CIPHERVAULT ]           __            [ VOLUNTEER CHECK-IN ]                                 [ SENTINEL ]              <__\___                 [ PATCHWORK ]     (_______)                        [ HK ]                  __               [ PPTX-TO-VIDEO ]
+            .-----.                                                       <__\___                                                                                             \/                                                                                            <__\___                                                NO. SHIPPED.
+            | o   |                                    _                      \/                   _                                                 _                                                 _                                               _                        \/                   _
+            |  .--'     SCROLL  >>>                  _| | _                                      _| | _                                            _| | _                                            _| | _                                          _| | _                                        _| | _
+   \        |  |--.                                 | | || |                                    | | || |                                          | | || |                                          | | || |                                        | | || |                                      | | || |                             *
+    \.------'  |                                    |_  ,_/                                     |_  ,_/                                           |_  ,_/                                           |_  ,_/                                         |_  ,_/                                       |_  ,_/                             ***
+     \_       _/                                      | |                                         | |                                               | |                                               | |                                             | |                                           | |                              *****
+       |_|  |_|                                       | |                                         | |                                               | |                                               | |                                             | |                                           | |                               | |
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+.          -     ,     .     -     ,          .     -     ,     .     -          ,     .     -     ,     .          -     ,     .     -     ,          .     -     ,     .     -          ,     .     -     ,     .          -     ,     .     -     ,          .     -     ,     .     -          ,     .     -     ,     .          -     ,     .
+```
+<!-- track:end -->
 
 <br>
 
