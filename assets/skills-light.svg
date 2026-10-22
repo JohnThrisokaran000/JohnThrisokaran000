@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="888" height="202" viewBox="0 0 888 202" role="img" aria-label="Skills: Frontend: React · Vue · HTML/CSS · JavaScript · TypeScript; Backend: Node.js · Python · Django · Spring Boot · FastAPI; Data: MongoDB · PostgreSQL · Redis · SQLite · Firebase; Mobile: Flutter · Dart · Kotlin; Systems: Rust · Zig · C++ · CUDA; Tools: Git · Docker · AWS · VS Code">
+  <title>Skills</title>
+  <style>text{font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif}</style>
+  <g transform="translate(0 0)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Frontend</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">React · Vue · HTML/CSS ·</text><text x="22" y="80" font-size="14.5" fill="#66787e">JavaScript · TypeScript</text>
+    </g><g transform="translate(304 0)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Backend</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">Node.js · Python · Django · Spring</text><text x="22" y="80" font-size="14.5" fill="#66787e">Boot · FastAPI</text>
+    </g><g transform="translate(608 0)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Data</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">MongoDB · PostgreSQL · Redis ·</text><text x="22" y="80" font-size="14.5" fill="#66787e">SQLite · Firebase</text>
+    </g><g transform="translate(0 110)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Mobile</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">Flutter · Dart · Kotlin</text>
+    </g><g transform="translate(304 110)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Systems</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">Rust · Zig · C++ · CUDA</text>
+    </g><g transform="translate(608 110)">
+      <rect width="280" height="92" rx="6" fill="#f5fbfd" stroke="#d5e8ee"/>
+      <rect width="3" height="92" fill="#007ea0"/>
+      <text x="22" y="34" font-size="17" font-weight="700" fill="#007ea0">Tools</text>
+      <text x="22" y="60" font-size="14.5" fill="#66787e">Git · Docker · AWS · VS Code</text>
+    </g>
+</svg>

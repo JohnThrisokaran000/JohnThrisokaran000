@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="196" viewBox="0 0 430 196" role="img" aria-label="hk: A from-scratch local LLM runtime in Zig: zero-copy mmap loading, CPU / CUDA / Vulkan engines, OpenAI-compatible server.">
+  <title>hk</title>
+  <defs><linearGradient id="top" x1="0" x2="1"><stop offset="0" stop-color="#00d9ff"/><stop offset="1" stop-color="#00d9ff" stop-opacity="0"/></linearGradient></defs>
+  <style>text{font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif}</style>
+  <rect x=".5" y=".5" width="429" height="195" rx="12" fill="#0b0b0b" stroke="#1c1c1c"/>
+  <rect x="24" y="0" width="120" height="3" fill="url(#top)"/>
+  <text x="24" y="44" font-size="21" font-weight="700" fill="#00d9ff">hk</text>
+  <text x="406" y="44" text-anchor="end" font-size="18" fill="#888888">↗</text>
+  <text x="24" y="78" font-size="15" fill="#bbbbbb">A from-scratch local LLM runtime in Zig: zero-copy</text><text x="24" y="100" font-size="15" fill="#bbbbbb">mmap loading, CPU / CUDA / Vulkan engines,</text><text x="24" y="122" font-size="15" fill="#bbbbbb">OpenAI-compatible server.</text>
+  <g transform="translate(24.0 154)"><rect width="38.0" height="24" rx="4" fill="rgba(0,217,255,0.10)" stroke="rgba(0,217,255,0.35)"/><text x="10" y="16.5" font-size="12.5" fill="#00d9ff">Zig</text></g><g transform="translate(70.0 154)"><rect width="52.0" height="24" rx="4" fill="rgba(0,217,255,0.10)" stroke="rgba(0,217,255,0.35)"/><text x="10" y="16.5" font-size="12.5" fill="#00d9ff">CUDA</text></g><g transform="translate(130.0 154)"><rect width="57.9" height="24" rx="4" fill="rgba(0,217,255,0.10)" stroke="rgba(0,217,255,0.35)"/><text x="10" y="16.5" font-size="12.5" fill="#00d9ff">Vulkan</text></g>
+</svg>

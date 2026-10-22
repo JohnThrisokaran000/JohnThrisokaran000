@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="196" viewBox="0 0 430 196" role="img" aria-label="CipherVault: Encrypt and decrypt text and images right in the browser, served by a small Flask app.">
+  <title>CipherVault</title>
+  <defs><linearGradient id="top" x1="0" x2="1"><stop offset="0" stop-color="#007ea0"/><stop offset="1" stop-color="#007ea0" stop-opacity="0"/></linearGradient></defs>
+  <style>text{font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif}</style>
+  <rect x=".5" y=".5" width="429" height="195" rx="12" fill="#f5fbfd" stroke="#d5e8ee"/>
+  <rect x="24" y="0" width="120" height="3" fill="url(#top)"/>
+  <text x="24" y="44" font-size="21" font-weight="700" fill="#007ea0">CipherVault</text>
+  <text x="406" y="44" text-anchor="end" font-size="18" fill="#66787e">↗</text>
+  <text x="24" y="78" font-size="15" fill="#3d4f55">Encrypt and decrypt text and images right in the</text><text x="24" y="100" font-size="15" fill="#3d4f55">browser, served by a small Flask app.</text>
+  <g transform="translate(24.0 154)"><rect width="61.1" height="24" rx="4" fill="rgba(0,126,160,0.08)" stroke="rgba(0,126,160,0.30)"/><text x="10" y="16.5" font-size="12.5" fill="#007ea0">Python</text></g><g transform="translate(93.1 154)"><rect width="51.3" height="24" rx="4" fill="rgba(0,126,160,0.08)" stroke="rgba(0,126,160,0.30)"/><text x="10" y="16.5" font-size="12.5" fill="#007ea0">Flask</text></g><g transform="translate(152.4 154)"><rect width="61.1" height="24" rx="4" fill="rgba(0,126,160,0.08)" stroke="rgba(0,126,160,0.30)"/><text x="10" y="16.5" font-size="12.5" fill="#007ea0">Crypto</text></g>
+</svg>
